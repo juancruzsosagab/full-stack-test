@@ -16,6 +16,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     onSearch(query);
   };
 
+  const inputStyles = {
+    color: '#fff',
+    '& input': {
+      color: '#fff',
+    },
+    '& fieldset': {
+      borderColor: '#fff',
+    },
+    '&:hover fieldset': {
+      borderColor: '#fff',
+    },
+  };
+
   return (
     <div style={{ marginBottom: '1rem' }}>
       <Grid container alignItems="center" justifyContent="center">
@@ -27,16 +40,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         <Grid item>
           <TextField
             style={{
-              color: '#fff',
-              '& input': {
-                color: '#fff',
-              },
-              '& fieldset': {
-                borderColor: '#fff',
-              },
-              '&:hover fieldset': {
-                borderColor: '#fff',
-              },
+              ...inputStyles,
             }}
             InputLabelProps={{ style: { color: '#fff', textAlign: 'center' } }}
             label="Enter query"
