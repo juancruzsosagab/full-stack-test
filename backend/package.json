@@ -1,6 +1,8 @@
 {
   "scripts": {
     "dev": "ts-node-dev --transpile-only server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "test": "jest --verbose"
   },
   "devDependencies": {

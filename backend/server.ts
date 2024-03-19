@@ -119,7 +119,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 
 // Start the server and listen on the specified port
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on PORT:${PORT}`);
 });
 
 
