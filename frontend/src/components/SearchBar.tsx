@@ -1,46 +1,12 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Grid, makeStyles } from '@material-ui/core';
+import { TextField, Button, Typography, Grid } from '@mui/material';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  searchBarContainer: {
-    marginBottom: theme.spacing(4), // Añade espacio debajo del componente de búsqueda
-  },
-  textField: {
-    '& .MuiInputBase-root': {
-      color: '#fff', // Texto blanco
-      '&:hover': {
-        borderColor: '#fff', // Cambiar color del borde al pasar el mouse
-      },
-      '&::before': {
-        borderColor: '#fff !important', // Cambiar color del borde superior
-      },
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#fff', // Borde blanco
-      },
-      '&:hover fieldset': {
-        borderColor: '#fff', // Cambiar color del borde al pasar el mouse
-      },
-    },
-  },
-  button: {
-    color: '#fff', // Texto blanco
-    borderColor: '#fff', // Borde blanco
-  },
-  inputLabel: {
-    color: '#fff !important',
-    textAlign: 'center',
-  },
-}));
-
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState('');
-  const classes = useStyles();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -51,7 +17,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className={classes.searchBarContainer}>
+    <div style={{ marginBottom: '1rem' }}>
       <Grid container alignItems="center" justifyContent="center">
         <Typography variant="h4" gutterBottom style={{ color: '#fff' }}>
           Search
@@ -60,8 +26,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       <Grid container spacing={2} alignItems="center" justifyContent="center">
         <Grid item>
           <TextField
-            className={classes.textField}
-            InputLabelProps={{ className: classes.inputLabel }}
+            style={{
+              color: '#fff',
+              '& input': {
+                color: '#fff',
+              },
+              '& fieldset': {
+                borderColor: '#fff',
+              },
+              '&:hover fieldset': {
+                borderColor: '#fff',
+              },
+            }}
+            InputLabelProps={{ style: { color: '#fff', textAlign: 'center' } }}
             label="Enter query"
             variant="outlined"
             value={query}
@@ -69,7 +46,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           />
         </Grid>
         <Grid item>
-          <Button className={classes.button} variant="contained" color="primary" onClick={handleSearch}>
+          <Button
+            style={{ color: '#fff', borderColor: '#fff' }}
+            variant="contained"
+            color="primary"
+            onClick={handleSearch}
+          >
             Search
           </Button>
         </Grid>

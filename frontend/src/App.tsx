@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Container, Typography, makeStyles } from '@material-ui/core';
-import FileUploadButton from './components/FileUploadButton';
+import { Container, Typography, Snackbar } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import FileUploadButtons from './components/FileUploadButtons';
 import SearchBar from './components/SearchBar';
 import Card from './components/Card';
 
+const apiUrl = import.meta.env.VITE_API_URL;
 interface CsvData {
   id: number;
   name: string;
@@ -12,65 +14,107 @@ interface CsvData {
   favorite_sport: string;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    paddingTop: theme.spacing(4),
-  },
-  title: {
-    marginBottom: theme.spacing(4),
-    fontSize: '32px',
-    color: '#ffffff',
-    display: 'flex',
-    justifyContent: 'center',
-    textAlign: 'center',
-  },
-}));
-
 const App: React.FC = () => {
-  const classes = useStyles();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [csvData, setCsvData] = useState<CsvData[]>([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info'>('success');
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+    setSnackbarMessage('File selected successfully');
+    setSnackbarSeverity('success');
+    setOpenSnackbar(true);
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', selectedFile);
 
-      const response = await fetch('http://localhost:3000/api/files', {
+      const response = await fetch(`${apiUrl}/api/files`, {
         method: 'POST',
         body: formData
       });
       const data = await response.json();
-      console.log(data.message);
+      setCsvData(data.data);
+      setSnackbarMessage(data.message);
+      setSnackbarSeverity('success');
+      setOpenSnackbar(true);
     } catch (error) {
       console.error('Error uploading file:', error);
+      setSnackbarMessage('Error uploading file');
+      setSnackbarSeverity('error');
+      setOpenSnackbar(true);
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
   };
 
   const handleSearch = async (query: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/users?q=${query}`);
+      const response = await fetch(`${apiUrl}/api/users?q=${query}`);
       const data = await response.json();
-      setCsvData(data.data);
+      if (data.data.length === 0) {
+        setSnackbarMessage('No data found');
+        setSnackbarSeverity('info');
+        setOpenSnackbar(true);
+        setCsvData([]);
+      } else {
+        setCsvData(data.data);
+      }
     } catch (error) {
       console.error('Error searching:', error);
     }
   };
 
   return (
-    <Container className={classes.container}>
-      <Typography variant="h4" component="h1" className={classes.title}>CSV Data Uploader & Viewer</Typography>
-      <FileUploadButton onFileUpload={handleFileUpload} />
+    <Container
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        paddingTop: '1rem',
+      }}
+    >
+      <Typography
+        variant="h4"
+        component="h1"
+        style={{
+          marginBottom: '1rem',
+          fontSize: '32px',
+          color: '#ffffff',
+          display: 'flex',
+          justifyContent: 'center',
+          textAlign: 'center',
+        }}
+      >
+        CSV Data Uploader & Viewer
+      </Typography>
+      <FileUploadButtons onSelectFile={handleFileSelect} onUploadFile={handleFileUpload} />
       <SearchBar onSearch={handleSearch} />
       <div>
-        {csvData.map((data, index) => (
+        {csvData && csvData.map((data, index) => (
           <Card key={index} data={data} />
         ))}
       </div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+      </Snackbar>
     </Container>
   );
 };
