@@ -4,6 +4,7 @@ import sqlite3 from 'sqlite3';
 import csv from 'csv-parser';
 import fs from 'fs';
 import multer from 'multer';
+import cors from 'cors'
 
 // Configuration for multer for file upload handling
 const upload = multer({ dest: 'uploads/' });
@@ -14,6 +15,8 @@ const PORT = 3000;
 // Initialize Express app
 const app = express();
 
+
+app.use(cors());
 // Connect to the SQLite database
 let db: Database<sqlite3.Database>;
 
